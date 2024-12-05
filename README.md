@@ -37,7 +37,7 @@ Buy a product: From here come the validations previously named, the purchase dat
 Selling a product: You can sell a product by clicking on the one you want and pressing the "sell" button below the product tree. The idea is to save sales data as well as purchase data, but for the moment we are using a single table. The function delete_element works.
 Editing products: Edit each product by double-clicking on it. Small fields will appear with information about the name and cost of the product. You can cancel the action or end it by clicking on any of the fields and pressing the "enter" key. Its functions are edit_element and save_edit.
 
-Getting started with the project
+## Getting started with the project
 To run the application for the first time, you need to create your virtual environment, either with anaconda, virtualenvwrapper or the python virtual environments.
 
 ### virtualenvwrapper:
