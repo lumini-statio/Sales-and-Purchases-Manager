@@ -227,6 +227,7 @@ def save_edit(item, entry_name, entry_cost):
         entry_cost.destroy()
         update_graph()
         ok = 'GRAPH UPDATED'
+        logs(ok)
     except:
         error = f'Error: problen when trying save changes'
         logs(error)
