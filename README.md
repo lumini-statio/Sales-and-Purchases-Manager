@@ -110,7 +110,7 @@ Comprar un producto: De acá salen las validaciones anteriormente nombradas, la 
 Vender un producto: Se puede vender un producto haciendo click sobre el que quiera y presionando el boton "sell" que está por debajo del arbol de productos. La idea es que se guarden los datos de la ventas además de los de compra, pero por el momento se está usando una sola tabla. El funcionamiento se encuentra en la función delete_element.
 Edición de productos: Edite cada producto haciendo doble click sobre el mismo, le apareceran unos campós pequeños con la información del nombre y del costo del producto, puede retirar la acción o terminarla haciendo click sobre cualquiera de los campos y presionando la tecla "enter". Sus funciones son edit_element y save_edit.
 
-Empezar con el proyecto
+## Empezar con el proyecto
 Para correr la aplicación por primera vez, necesita crear su entorno virtual, ya sea con anaconda, virutualenvwrapper o los entornos virtuales de python.
 
 ### virtualenvwrapper:
