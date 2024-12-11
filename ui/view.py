@@ -6,6 +6,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from tkinter.messagebox import showerror
+from datetime import datetime
 
 
 def db_connect():
@@ -48,7 +49,7 @@ def main():
         
         def call_filter_treeview(event):
             filter_treeview(tree, search, option_var)
-
+        
         search = ttk.Entry(left_frame, width=20, font=('Arial', 13))
         search.grid(row=0, column=0, pady=10, padx=10, sticky=W)
         search.bind('<KeyRelease>', call_filter_treeview)
@@ -99,7 +100,7 @@ def main():
         canvas.get_tk_widget().grid(row=0, column=0, padx=10, sticky=E)
 
         def call_edit_element(event):
-            edit_element(tree, t, canvas)
+            edit_element(tree, t, canvas, button_sell)
 
         tree.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky=N+S+E+W)
         tree.bind("<Double-1>", call_edit_element)
@@ -142,13 +143,19 @@ def main():
         def call_create_element():
             create_element(tree, label_error, input_name, input_cost, t, canvas)
 
+        
+        def call_import_data():
+            import_data(right_down_frame, tree, t, canvas)
+
         button_buy = ttk.Button(right_down_frame, text='comprar', command=call_create_element)
         button_buy.grid(row=7,column=0, sticky=W, pady=5)
+
+        button_buy = ttk.Button(right_down_frame, text='Importar datos', command=call_import_data)
+        button_buy.grid(row=7,column=0, sticky=E, pady=5)
 
         update_treeview(tree)
 
         root.mainloop()
     except Exception as e:
-        print(e)
         logs(f'Error on views - {e}')
         showerror('Ups!', 'Problem trying to rendering the app view...')

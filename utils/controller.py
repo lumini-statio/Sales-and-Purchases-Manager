@@ -25,7 +25,7 @@ def buy(label_error, input_name, input_cost):
             'precio': product_cost
         }
 
-        label_error.config(text='Product registred correctly', foreground='green')
+        label_error.config(text='Product registered correctly', foreground='green')
 
         ok = f'OK TO BUY PRODUCT {product_name}'
         logs(ok)
@@ -85,10 +85,16 @@ def delete_element(t, canvas, tree):
         error = f'Error to delete object #{my_id}: {e}'
         logs(error)
         showerror('Errpr', f'Problem when deleting object #{my_id}')
+
+def switch(button_sell, state):
+
+    button_sell['state'] = state
     
 
-def edit_element(tree, t, canvas):
+def edit_element(tree, t, canvas, button_sell):
+                
     for item in tree.selection():
+        switch(button_sell, 'disabled')
         item_text = tree.item(item, "values")
         entry_name = ttk.Entry(tree, width=10)
         entry_name.insert(0, item_text[0])
@@ -98,26 +104,28 @@ def edit_element(tree, t, canvas):
         entry_cost.insert(0, item_text[2])
         entry_cost.grid(row=tree.index(item), column=4)
         
-        entry_name.bind("<Return>", lambda e: save_edit(item, tree, entry_name, entry_cost, t, canvas))
-        entry_cost.bind("<Return>", lambda e: save_edit(item, tree, entry_name, entry_cost, t, canvas))
+        entry_name.bind("<Return>", lambda e: save_edit(item, tree, entry_name, entry_cost, t, canvas, button_sell))
+        entry_cost.bind("<Return>", lambda e: save_edit(item, tree, entry_name, entry_cost, t, canvas, button_sell))
 
 
-def save_edit(item, tree, entry_name, entry_cost, t, canvas):
+def save_edit(item, tree, entry_name, entry_cost, t, canvas, button_sell):
     name = entry_name.get()
     cost = entry_cost.get()
     tree.item(item, values=(name, cost))
     con = connection()
     cursor = con.cursor()
+    data = (name, cost, tree.item(item, "text"))
     query = 'UPDATE productos SET producto = ?, precio = ? WHERE id = ?'
 
     try:
-        cursor.execute(query, (name, cost, tree.item(item, "text")))
+        cursor.execute(query, data)
         con.commit()
         con.close()
         update_treeview(tree)
         entry_name.destroy()
         entry_cost.destroy()
         update_graph(t, canvas)
+        switch(button_sell, 'enable')
         ok = 'GRAPH UPDATED'
         logs(ok)
     except Exception as e:
@@ -125,6 +133,23 @@ def save_edit(item, tree, entry_name, entry_cost, t, canvas):
         logs(error)
         showerror('Error', 'Problem when trying to save changes')
 
+
+def import_data(left_frame, treeview, t, canvas):
+
+    df = validate_import(left_frame)
+    con = connection()
+
+    try:
+        df = df.drop_duplicates(subset=['id'])
+
+        df.to_sql('productos', con, index=False, if_exists='append')
+
+        update_treeview(treeview)
+        update_graph(t, canvas)
+
+        logs('Data import successful')
+    except Exception as e:
+        logs(f'Error importing data from external file - {e}')
 
 def export_to_excel():
 
@@ -311,8 +336,29 @@ def validate_export(extension, type):
         file.write('')
 
     return file_path
-    
 
+def validate_import(left_frame):
+
+    file_path = askopenfilename(
+        filetypes=(
+            ('CSV', '*.csv'),
+            ('Text', '*.txt'),
+            ('Excel', '*.xslx'),
+        ),
+        parent=left_frame,
+        title='Import Data'
+    )
+
+    if not file_path:
+        showinfo('Import Cancelled', 'No name provided')
+    
+    if file_path.endswith('.csv') or file_path.endswith('.txt'):
+        df = pd.read_csv(file_path, delimiter=',')
+        return df
+    elif file_path.endswith('.xlsx'):
+        df = pd.read_excel(file_path)
+        return df
+    
 def validate_name(name):
     try:
         if not re.match(r'^(([a-z]+)(-?)([a-zA-Z]*)){4,}$', name):
